@@ -15,8 +15,16 @@ public class CameraController : MonoBehaviour
     [SerializeField] private bool simpleFOVZoom = true;
     [SerializeField] private float simpleFOVMax = 60f;
     [SerializeField] private float simpleFOVMin = 20f;
+    [SerializeField] private float minZOffset = -10f;
+    [SerializeField] private float maxZOffset = -1f;
+    [SerializeField] private float minYOffset = 1f;
+    [SerializeField] private float maxYOffset = 10f;
 
+    private CinemachineTransposer transposer;
+    
     private float targetFOV;
+    private float targetZOffset;
+    private float targetYOffset;
 
     private Vector2 moveInput;
     public Vector2 MoveInput
@@ -79,6 +87,14 @@ public class CameraController : MonoBehaviour
             targetFOV = Mathf.Clamp(virtualCamera.m_Lens.FieldOfView, simpleFOVMin, simpleFOVMax);
             virtualCamera.m_Lens.FieldOfView = targetFOV;
         }
+        else
+        {
+            transposer = virtualCamera.GetCinemachineComponent<CinemachineTransposer>();
+            targetZOffset = Mathf.Clamp(transposer.m_FollowOffset.z, minZOffset, maxZOffset);
+            targetYOffset = Mathf.Clamp(transposer.m_FollowOffset.y, minYOffset, maxYOffset);
+            transposer.m_FollowOffset.z = targetZOffset;
+            transposer.m_FollowOffset.y = targetYOffset;
+        }
     }
 
     private void LateUpdate()
@@ -112,6 +128,19 @@ public class CameraController : MonoBehaviour
                 targetFOV = virtualCamera.m_Lens.FieldOfView + (zoomInput * zoomSpeed * Time.deltaTime);
                 targetFOV = Mathf.Clamp(targetFOV, simpleFOVMin, simpleFOVMax);
                 virtualCamera.m_Lens.FieldOfView = targetFOV;
+            }
+        }
+        else
+        {
+            if (zoomInput != 0)
+            {
+                targetZOffset = transposer.m_FollowOffset.z - (zoomInput * zoomSpeed * Time.deltaTime);
+                targetZOffset = Mathf.Clamp(targetZOffset, minZOffset, maxZOffset);
+
+                targetYOffset = transposer.m_FollowOffset.y + (zoomInput * zoomSpeed * Time.deltaTime);
+                targetYOffset = Mathf.Clamp(targetYOffset, minYOffset, maxYOffset);
+
+                transposer.m_FollowOffset = new(0f, targetYOffset, targetZOffset);
             }
         }
     }

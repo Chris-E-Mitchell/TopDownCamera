@@ -389,7 +389,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.38268346, y: 0.000000022481217, z: -0.000000009312026, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: -0.00000002248122, z: 0.000000009312027, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 10, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -488,7 +488,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1581399011}
-  m_LocalRotation: {x: 0.38268346, y: 0.000000022481217, z: -0.000000009312026, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: -0.00000002248122, z: 0.000000009312027, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 10, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -684,9 +684,14 @@ MonoBehaviour:
   edgeDetectionSize: 10
   virtualCamera: {fileID: 1581399013}
   zoomSpeed: 20
-  simpleFOVZoom: 1
+  scrollZoomSpeed: 5
+  simpleFOVZoom: 0
   simpleFOVMax: 60
   simpleFOVMin: 20
+  minZOffset: -10
+  maxZOffset: -1
+  minYOffset: 1
+  maxYOffset: 10
 --- !u!114 &2062586090
 MonoBehaviour:
   m_ObjectHideFlags: 0
