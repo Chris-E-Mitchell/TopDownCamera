@@ -27,4 +27,20 @@ public class CameraInput : MonoBehaviour
         float inputValue = value.Get<float>();
         cameraController.RotationInput = inputValue;
     }
+
+    private void OnRotateMouse(InputValue value)
+    {
+        if (cameraController == null) { return; }
+        Vector2 inputValue = value.Get<Vector2>();
+
+        cameraController.RotationInputMouse = inputValue;
+    }
+
+    private void OnMoveMouse(InputValue value)
+    {
+        if (cameraController == null) { return; }
+        Vector2 inputValue = value.Get<Vector2>();
+
+        cameraController.MoveInputMouse = inputValue;
+    }
 }

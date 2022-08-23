@@ -21,10 +21,26 @@ public class CameraController : MonoBehaviour
         set { rotationInput = value; }
     }
 
+    private Vector2 rotationInputMouse;
+    public Vector2 RotationInputMouse
+    {
+        get { return rotationInputMouse; }
+        set { rotationInputMouse = value; }
+    }
+
+    private Vector2 moveInputMouse;
+    public Vector2 MoveInputMouse
+    {
+        get { return moveInputMouse; }
+        set { moveInputMouse = value; }
+    }
+
     private void LateUpdate()
     {
         MoveCamera();
+        MoveCameraMouse();
         RotateCamera();
+        RotateCameraMouse();
     }
 
     private void MoveCamera()
@@ -36,5 +52,16 @@ public class CameraController : MonoBehaviour
     private void RotateCamera()
     {
         transform.Rotate(transform.up * rotationInput * rotateSpeed * Time.deltaTime);
+    }
+
+    private void RotateCameraMouse()
+    {
+        transform.Rotate(transform.up * rotationInputMouse.x * rotateSpeed * Time.deltaTime);
+    }
+
+    private void MoveCameraMouse()
+    {
+        transform.position += transform.forward * -moveInputMouse.y * moveSpeed * Time.deltaTime;
+        transform.position += transform.right * -moveInputMouse.x * moveSpeed * Time.deltaTime;
     }
 }
