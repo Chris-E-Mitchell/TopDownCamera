@@ -28,6 +28,14 @@ public class CameraInput : MonoBehaviour
         cameraController.RotationInput = inputValue;
     }
 
+    private void OnZoom(InputValue value)
+    {
+        if (cameraController == null) { return; }
+
+        float inputValue = value.Get<float>();
+        cameraController.ZoomInput = inputValue;
+    }
+
     private void OnRotateMouse(InputValue value)
     {
         if (cameraController == null) { return; }
@@ -50,5 +58,13 @@ public class CameraInput : MonoBehaviour
         Vector2 inputValue = value.Get<Vector2>();
 
         cameraController.MoveInputMousePosition = inputValue;
+    }
+
+    private void OnZoomMouse(InputValue value)
+    {
+        if (cameraController == null) { return; }
+        Vector2 inputValue = value.Get<Vector2>();
+
+        cameraController.ZoomInputMouse = inputValue;
     }
 }

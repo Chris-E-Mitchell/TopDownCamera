@@ -1,12 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class CameraController : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float rotateSpeed = 5f;
     [SerializeField] private float edgeDetectionSize = 10f;
+
+    [SerializeField] private CinemachineVirtualCamera virtualCamera;
+    [SerializeField] private float zoomSpeed = 20f;
+    [SerializeField] private float scrollZoomSpeed = 5f;
+    [SerializeField] private bool simpleFOVZoom = true;
+    [SerializeField] private float simpleFOVMax = 60f;
+    [SerializeField] private float simpleFOVMin = 20f;
+
+    private float targetFOV;
 
     private Vector2 moveInput;
     public Vector2 MoveInput
@@ -20,6 +30,13 @@ public class CameraController : MonoBehaviour
     {
         get { return rotationInput; }
         set { rotationInput = value; }
+    }
+
+    private float zoomInput;
+    public float ZoomInput
+    {
+        get { return zoomInput; }
+        set { zoomInput = value; }
     }
 
     private Vector2 rotationInputMouse;
@@ -43,54 +60,110 @@ public class CameraController : MonoBehaviour
         set { moveInputMousePosition = value; }
     }
 
+    private Vector2 zoomInputMouse;
+    public Vector2 ZoomInputMouse
+    {
+        get { return zoomInputMouse; }
+        set { zoomInputMouse = value; }
+    }
+
+    private void Start()
+    {
+        if (virtualCamera == null)
+        {
+            Debug.LogWarning("Virtual Camera not assigned in " + name);
+        }
+
+        if (simpleFOVZoom)
+        {
+            targetFOV = Mathf.Clamp(virtualCamera.m_Lens.FieldOfView, simpleFOVMin, simpleFOVMax);
+            virtualCamera.m_Lens.FieldOfView = targetFOV;
+        }
+    }
+
     private void LateUpdate()
     {
         MoveCamera();
         MoveCameraMouse();
         RotateCamera();
+        ZoomCameraKeys();
         RotateCameraMouse();
-        EdgeDetectMove();
+        //EdgeDetectMove();
+        ZoomCameraMouse();
     }
 
     private void MoveCamera()
     {
-        transform.position += transform.forward * moveInput.y * moveSpeed * Time.deltaTime;
-        transform.position += transform.right * moveInput.x * moveSpeed * Time.deltaTime;
+        transform.position += moveInput.y * moveSpeed * Time.deltaTime * transform.forward;
+        transform.position += moveInput.x * moveSpeed * Time.deltaTime * transform.right;
     }
 
     private void RotateCamera()
     {
-        transform.Rotate(transform.up * rotationInput * rotateSpeed * Time.deltaTime);
+        transform.Rotate(rotateSpeed * rotationInput * Time.deltaTime * transform.up);
+    }
+
+    private void ZoomCameraKeys()
+    {
+        if (simpleFOVZoom)
+        {
+            if (zoomInput != 0)
+            {
+                targetFOV = virtualCamera.m_Lens.FieldOfView + (zoomInput * zoomSpeed * Time.deltaTime);
+                targetFOV = Mathf.Clamp(targetFOV, simpleFOVMin, simpleFOVMax);
+                virtualCamera.m_Lens.FieldOfView = targetFOV;
+            }
+        }
     }
 
     private void RotateCameraMouse()
     {
-        transform.Rotate(transform.up * rotationInputMouse.x * rotateSpeed * Time.deltaTime);
+        transform.Rotate(rotateSpeed * rotationInputMouse.x * Time.deltaTime * transform.up);
     }
 
     private void MoveCameraMouse()
     {
-        transform.position += transform.forward * -moveInputMouse.y * moveSpeed * Time.deltaTime;
-        transform.position += transform.right * -moveInputMouse.x * moveSpeed * Time.deltaTime;
+        transform.position += -moveInputMouse.y * moveSpeed * Time.deltaTime * transform.forward;
+        transform.position += -moveInputMouse.x * moveSpeed * Time.deltaTime * transform.right;
     }
 
     private void EdgeDetectMove()
     {
         if (moveInputMousePosition.y >= (Camera.main.pixelHeight - edgeDetectionSize))
         {
-            transform.position += transform.forward * moveSpeed * Time.deltaTime;
+            transform.position += moveSpeed * Time.deltaTime * transform.forward;
         }
         if (moveInputMousePosition.y <= edgeDetectionSize)
         {
-            transform.position -= transform.forward * moveSpeed * Time.deltaTime;
+            transform.position -= moveSpeed * Time.deltaTime * transform.forward;
         }
         if (moveInputMousePosition.x >= (Camera.main.pixelWidth - edgeDetectionSize))
         {
-            transform.position += transform.right * moveSpeed * Time.deltaTime;
+            transform.position += moveSpeed * Time.deltaTime * transform.right;
         }
         if (moveInputMousePosition.x <= edgeDetectionSize)
         {
-            transform.position -= transform.right * moveSpeed * Time.deltaTime;
+            transform.position -= moveSpeed * Time.deltaTime * transform.right;
+        }
+    }
+
+    private void ZoomCameraMouse()
+    {
+        if (simpleFOVZoom)
+        {
+            if (zoomInputMouse.y > 0)
+            {
+                targetFOV -= scrollZoomSpeed;
+            }
+            if (zoomInputMouse.y < 0)
+            {
+                targetFOV += scrollZoomSpeed;
+            }
+
+            targetFOV = Mathf.Clamp(targetFOV, simpleFOVMin, simpleFOVMax);
+
+            float lerpSpeed = 10f;
+            virtualCamera.m_Lens.FieldOfView = Mathf.Lerp(virtualCamera.m_Lens.FieldOfView, targetFOV, lerpSpeed * Time.deltaTime);
         }
     }
 }
