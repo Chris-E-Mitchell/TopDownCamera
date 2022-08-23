@@ -6,6 +6,7 @@ public class CameraController : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float rotateSpeed = 5f;
+    [SerializeField] private float edgeDetectionSize = 10f;
 
     private Vector2 moveInput;
     public Vector2 MoveInput
@@ -35,12 +36,20 @@ public class CameraController : MonoBehaviour
         set { moveInputMouse = value; }
     }
 
+    private Vector2 moveInputMousePosition;
+    public Vector2 MoveInputMousePosition
+    {
+        get { return moveInputMousePosition; }
+        set { moveInputMousePosition = value; }
+    }
+
     private void LateUpdate()
     {
         MoveCamera();
         MoveCameraMouse();
         RotateCamera();
         RotateCameraMouse();
+        EdgeDetectMove();
     }
 
     private void MoveCamera()
@@ -63,5 +72,25 @@ public class CameraController : MonoBehaviour
     {
         transform.position += transform.forward * -moveInputMouse.y * moveSpeed * Time.deltaTime;
         transform.position += transform.right * -moveInputMouse.x * moveSpeed * Time.deltaTime;
+    }
+
+    private void EdgeDetectMove()
+    {
+        if (moveInputMousePosition.y >= (Camera.main.pixelHeight - edgeDetectionSize))
+        {
+            transform.position += transform.forward * moveSpeed * Time.deltaTime;
+        }
+        if (moveInputMousePosition.y <= edgeDetectionSize)
+        {
+            transform.position -= transform.forward * moveSpeed * Time.deltaTime;
+        }
+        if (moveInputMousePosition.x >= (Camera.main.pixelWidth - edgeDetectionSize))
+        {
+            transform.position += transform.right * moveSpeed * Time.deltaTime;
+        }
+        if (moveInputMousePosition.x <= edgeDetectionSize)
+        {
+            transform.position -= transform.right * moveSpeed * Time.deltaTime;
+        }
     }
 }

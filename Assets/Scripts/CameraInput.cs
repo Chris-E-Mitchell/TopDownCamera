@@ -43,4 +43,12 @@ public class CameraInput : MonoBehaviour
 
         cameraController.MoveInputMouse = inputValue;
     }
+
+    private void OnMousePosition(InputValue value)
+    {
+        if (cameraController == null) { return; }
+        Vector2 inputValue = value.Get<Vector2>();
+
+        cameraController.MoveInputMousePosition = inputValue;
+    }
 }
